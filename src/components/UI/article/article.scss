@@ -1,0 +1,16 @@
+.Article{
+    border: 1px solid gray;
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
+
+    .article_image{
+        img{
+            border-radius: 5px;
+        }
+    }
+
+    .article_time{
+        color: gray;
+    }
+}

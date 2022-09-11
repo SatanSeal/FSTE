@@ -1,0 +1,60 @@
+@import '../../../scss/color_vars.scss';
+
+.Color_mode_trigger{
+    border: 1px solid $gray_color_2;
+    border-radius: 5px;
+    display: flex;
+    height: 36px;
+    width: 200px;
+    font-size: 500;
+    
+    .trigger_link, .trigger_link_active{
+        transition: all .3s ease-in;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 50%;
+        
+        img{
+            width: 18px;
+            height: 18px;
+            margin-right: 5px;
+        }
+
+        svg{
+            margin-right: 5px;
+        }
+    }
+
+    .trigger_link{
+        cursor: pointer;
+    }
+    
+    .trigger_link_active{
+        background-color: $yellow_color;
+        border-radius: 5px;
+        color: #000;
+        cursor: default;
+    }
+
+    .Color_mode_dark_link{
+        color: #000;
+    }
+}
+
+.Color_mode_trigger_minimized{
+    width: 70px;
+    height: 30px;
+
+    .trigger_link, .trigger_link_active{
+
+        img{
+            margin-right: 0;
+        }
+
+        svg{
+            margin-right: 0;
+        }
+    }
+}

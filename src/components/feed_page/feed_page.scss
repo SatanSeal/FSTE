@@ -1,0 +1,17 @@
+.Feed_page{
+    margin: 0px 0px;
+
+    .articles{
+        display: flex;
+        justify-content: space-evenly;
+        flex-wrap: wrap;
+        
+        .Article{
+            width: 32%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;            
+            margin: 5px 0;
+        }
+    }
+}
