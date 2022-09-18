@@ -24,6 +24,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import HelpIcon from '@mui/icons-material/Help';
 
 import { useStoreDispatch } from "../../../store/store";
+import Drawer from "@mui/material/Drawer";
 
 const drawerWidth = 240;
 
@@ -56,7 +57,7 @@ const other_list = [
         link: '/help'
     }
 ]
-
+// desktop version
 const openedMixin = (theme: Theme): CSSObject => ({
     width: drawerWidth,
     transition: theme.transitions.create('width', {
@@ -65,7 +66,6 @@ const openedMixin = (theme: Theme): CSSObject => ({
     }),
     overflowX: 'hidden',
 });
-
 const closedMixin = (theme: Theme): CSSObject => ({
     transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
@@ -77,7 +77,6 @@ const closedMixin = (theme: Theme): CSSObject => ({
         width: `calc(${theme.spacing(8)} + 1px)`,
     },
 });
-
 export const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
@@ -86,11 +85,9 @@ export const DrawerHeader = styled('div')(({ theme }) => ({
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
 }));
-  
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
 }
-
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
 })<AppBarProps>(({ theme, open }) => ({
@@ -108,8 +105,7 @@ const AppBar = styled(MuiAppBar, {
         }),
     }),
 }));
-
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+const DesktopDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
     ({ theme, open }) => ({
         width: drawerWidth,
         flexShrink: 0,
@@ -125,7 +121,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
         }),
     }),
 );
-
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -140,7 +135,6 @@ const Search = styled('div')(({ theme }) => ({
         width: 'auto',
     },
 }));
-
 /*const SearchIconWrapper = styled('div')(({ theme }) => ({
     padding: theme.spacing(0, 2),
     height: '100%',
@@ -150,7 +144,6 @@ const Search = styled('div')(({ theme }) => ({
     alignItems: 'center',
     justifyContent: 'center',
 }));*/
-
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
     '& .MuiInputBase-input': {
@@ -168,9 +161,73 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         },
     },
 }));
+// /desktop version
+
+// mobile version
+export const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
+    open?: boolean;
+}>(({ theme, open }) => ({
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    transition: theme.transitions.create('margin', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginLeft: `-${drawerWidth}px`,
+    ...(open && {
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginLeft: 0,
+    }),
+}));
+const MobileAppBar = styled(MuiAppBar, {
+    shouldForwardProp: (prop) => prop !== 'open',
+})<AppBarProps>(({ theme, open }) => ({
+    transition: theme.transitions.create(['margin', 'width'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    ...(open && {
+        marginLeft: `${drawerWidth}px`,
+        width: `calc(100% - ${drawerWidth}px)`,
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    }),
+})); 
+const MobileDrawerHeader = styled('div')(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: 'flex-end',
+}));
+/*
+<AppBar position="fixed" open={open}>
+    <Toolbar>
+        <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            sx={{ mr: 2, ...(open && { display: 'none' }) }}
+        >
+            <MenuIcon />
+        </IconButton>
+        <Typography variant="h6" noWrap component="div">
+            Persistent drawer
+        </Typography>
+    </Toolbar>
+</AppBar>
+*/
+// /mobile version
 
 
-const Header2: React.FC = () => {
+const Header3: React.FC = () => {
 
     const history = useHistory();
     const location = useLocation();
@@ -223,7 +280,7 @@ const Header2: React.FC = () => {
     return (
         <>
             <CssBaseline />
-            <AppBar position='fixed' open={open}>
+            {/*<AppBar position='fixed' open={open}>
                 <Toolbar>
                     <IconButton
                         color="inherit"
@@ -269,12 +326,29 @@ const Header2: React.FC = () => {
                         </Search>
                     }
                 </Toolbar>
-            </AppBar>
-            <Drawer variant="permanent" open={open}>
+            </AppBar>*/}
+
+            <MobileAppBar position="fixed" open={open}>
+                <Toolbar>
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        onClick={handle_drawer_open}
+                        edge="start"
+                        sx={{ mr: 2, ...(open && { display: 'none' }) }}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography variant="h6" noWrap component="div">
+                        Persistent drawer
+                    </Typography>
+                </Toolbar>
+            </MobileAppBar>
+            {/*
+            <DesktopDrawer variant="permanent" open={open}>
                 <DrawerHeader>
                     <IconButton onClick={handle_drawer_close}>
-                        {/* {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />} */}
-                        <ChevronRightIcon />
+                        {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
                     </IconButton>
                 </DrawerHeader>
                 <Divider />
@@ -329,9 +403,55 @@ const Header2: React.FC = () => {
                     </ListItem>
                 ))}
                 </List>
+            </DesktopDrawer>*/}
+
+            <Drawer
+                sx={{
+                width: drawerWidth,
+                flexShrink: 0,
+                '& .MuiDrawer-paper': {
+                    width: drawerWidth,
+                    boxSizing: 'border-box',
+                },
+                }}
+                variant="persistent"
+                anchor="left"
+                open={open}
+            >
+                <MobileDrawerHeader>
+                <IconButton onClick={handle_drawer_close}>
+                    {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                </IconButton>
+                </MobileDrawerHeader>
+                <Divider />
+                <List>
+                {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+                    <ListItem key={text} disablePadding>
+                    <ListItemButton>
+                        <ListItemIcon>
+                        {index % 2 === 0 ? <FeedIcon /> : <SearchIcon />}
+                        </ListItemIcon>
+                        <ListItemText primary={text} />
+                    </ListItemButton>
+                    </ListItem>
+                ))}
+                </List>
+                <Divider />
+                <List>
+                {['All mail', 'Trash', 'Spam'].map((text, index) => (
+                    <ListItem key={text} disablePadding>
+                    <ListItemButton>
+                        <ListItemIcon>
+                        {index % 2 === 0 ? <FeedIcon /> : <SearchIcon />}
+                        </ListItemIcon>
+                        <ListItemText primary={text} />
+                    </ListItemButton>
+                    </ListItem>
+                ))}
+                </List>
             </Drawer>
         </>
     )
 }
 
-export default Header2;
+export default Header3;

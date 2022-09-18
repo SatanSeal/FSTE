@@ -29,6 +29,7 @@ const ColorModeHandler: React.FC <{set_outer_dark_mode?: (arg: boolean) => void}
             turn_dark_mode_off();
             set_outer_dark_mode && set_outer_dark_mode(false);
         }
+        // eslint-disable-next-line
     }, [dark_mode])
 
     function turn_dark_mode_on() {

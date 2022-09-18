@@ -22,10 +22,13 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import FeedIcon from '@mui/icons-material/Feed';
 import InfoIcon from '@mui/icons-material/Info';
 import HelpIcon from '@mui/icons-material/Help';
+import Drawer from "@mui/material/Drawer";
+import Box from "@mui/material/Box";
 
 import { useStoreDispatch } from "../../../store/store";
+import { mobile_max_width } from "../../../settings";
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 const news_list = [
     {
@@ -56,6 +59,7 @@ const other_list = [
         link: '/help'
     }
 ]
+
 
 const openedMixin = (theme: Theme): CSSObject => ({
     width: drawerWidth,
@@ -88,18 +92,20 @@ export const DrawerHeader = styled('div')(({ theme }) => ({
 }));
   
 interface AppBarProps extends MuiAppBarProps {
-    open?: boolean;
+    open?: boolean,
+    is_mobile?: boolean,
 }
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
-})<AppBarProps>(({ theme, open }) => ({
-    zIndex: theme.zIndex.drawer + 1,
+})<AppBarProps>(({ theme, open, is_mobile }) => ({
+    // zIndex: theme.zIndex.drawer + 1,
+    zIndex: theme.zIndex.drawer + (is_mobile? 0 : 1),
     transition: theme.transitions.create(['width', 'margin'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
     }),
-    ...(open && {
+    ...(open && !is_mobile && {
         marginLeft: drawerWidth,
         width: `calc(100% - ${drawerWidth}px)`,
         transition: theme.transitions.create(['width', 'margin'], {
@@ -109,7 +115,7 @@ const AppBar = styled(MuiAppBar, {
     }),
 }));
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+const DesktopDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
     ({ theme, open }) => ({
         width: drawerWidth,
         flexShrink: 0,
@@ -141,16 +147,6 @@ const Search = styled('div')(({ theme }) => ({
     },
 }));
 
-/*const SearchIconWrapper = styled('div')(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-}));*/
-
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
     '& .MuiInputBase-input': {
@@ -170,7 +166,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 
-const Header2: React.FC = () => {
+
+const Header4: React.FC = () => {
 
     const history = useHistory();
     const location = useLocation();
@@ -179,16 +176,28 @@ const Header2: React.FC = () => {
 
     const [open, set_open] = useState(false);
     const [local_search_string, set_local_search_string] = useState('');
-    const [search_input_showed, set_search_input_showed] = useState(true);
+    const [search_input_showed, set_search_input_showed] = useState(false);
+
+    const [is_mobile, set_is_mobile] = useState(false);
 
     useEffect(()=>{
         set_search_input_showed( !location.pathname.includes('/search') );
     }, [location])
 
+    useEffect(()=>{
+        const func = () => set_is_mobile(window.innerWidth <= mobile_max_width);
+        func();
+        window.addEventListener('resize', func);
+
+        return ()=>{
+            window.removeEventListener('resize', func);
+        }
+    }, [])
+
     const handle_drawer_open = () => {
         set_open(true);
     };
-    
+
     const handle_drawer_close = () => {
         set_open(false);
     };
@@ -219,11 +228,25 @@ const Header2: React.FC = () => {
         history.push(link);
     }
 
+    // mobile
+    const toggle_drawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+        if (
+            event.type === 'keydown' &&
+            ((event as React.KeyboardEvent).key === 'Tab' ||
+            (event as React.KeyboardEvent).key === 'Shift')
+        ) {
+            return;
+        }
+
+        set_open(open);
+    };
+    // /mobile
+
 
     return (
         <>
             <CssBaseline />
-            <AppBar position='fixed' open={open}>
+            <AppBar position='fixed' open={open} is_mobile={is_mobile}>
                 <Toolbar>
                     <IconButton
                         color="inherit"
@@ -231,8 +254,8 @@ const Header2: React.FC = () => {
                         onClick={handle_drawer_open}
                         edge="start"
                         sx={{
-                        marginRight: 5,
-                        ...(open && { display: 'none' }),
+                            marginRight: 5,
+                            ...(open && { display: 'none' }),
                         }}
                     >
                         <MenuIcon />
@@ -270,68 +293,122 @@ const Header2: React.FC = () => {
                     }
                 </Toolbar>
             </AppBar>
-            <Drawer variant="permanent" open={open}>
-                <DrawerHeader>
-                    <IconButton onClick={handle_drawer_close}>
-                        {/* {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />} */}
-                        <ChevronRightIcon />
-                    </IconButton>
-                </DrawerHeader>
-                <Divider />
-                <List>
-                    {news_list.map(list_item => (
-                        <ListItem key={list_item.title} disablePadding sx={{ display: 'block' }}>
-                            <ListItemButton
-                                sx={{
-                                minHeight: 48,
-                                justifyContent: open ? 'initial' : 'center',
-                                px: 2.5,
-                                }}
-                                onClick={() => handle_link_click(list_item.link)}
-                            >
-                                <ListItemIcon
-                                    sx={{
-                                        minWidth: 0,
-                                        mr: open ? 3 : 'auto',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    {list_item.icon}
-                                </ListItemIcon>
-                                <ListItemText primary={list_item.title} sx={{ opacity: open ? 1 : 0 }} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-                <Divider />
-                <List>
-                {other_list.map(list_item => (
-                    <ListItem key={list_item.title} disablePadding sx={{ display: 'block' }}>
-                    <ListItemButton
-                        sx={{
-                        minHeight: 48,
-                        justifyContent: open ? 'initial' : 'center',
-                        px: 2.5,
-                        }}
-                        onClick={() => handle_link_click(list_item.link)}
+            {is_mobile?
+                <Drawer
+                    anchor='left'
+                    open={open}
+                    onClose={toggle_drawer(false)}
+                >
+                    <Box
+                        sx={{ width: drawerWidth }}
+                        role="presentation"
+                        onClick={toggle_drawer(false)}
+                        onKeyDown={toggle_drawer(false)}
                     >
-                        <ListItemIcon
-                            sx={{
-                                minWidth: 0,
-                                mr: open ? 3 : 'auto',
-                                justifyContent: 'center',
-                            }}
-                        >
-                            {list_item.icon}
-                        </ListItemIcon>
-                        <ListItemText primary={list_item.title} sx={{ opacity: open ? 1 : 0 }} />
-                    </ListItemButton>
-                    </ListItem>
-                ))}
-                </List>
-            </Drawer>
+                        <List>
+                            {news_list.map(list_item => (
+                                <ListItem key={list_item.title} disablePadding>
+                                    <ListItemButton
+                                        sx={{
+                                            minHeight: 48,
+                                            justifyContent: open ? 'initial' : 'center',
+                                            px: 2.5,
+                                        }}
+                                        onClick={() => handle_link_click(list_item.link)}
+                                    >
+                                        <ListItemIcon>
+                                            {list_item.icon}
+                                        </ListItemIcon>
+                                        <ListItemText primary={list_item.title} />
+                                    </ListItemButton>
+                                </ListItem>
+                            ))}
+                        </List>
+                        <Divider />
+                        <List>
+                            {other_list.map(list_item => (
+                                <ListItem key={list_item.title} disablePadding>
+                                    <ListItemButton
+                                        sx={{
+                                            minHeight: 48,
+                                            justifyContent: open ? 'initial' : 'center',
+                                            px: 2.5,
+                                        }}
+                                        onClick={() => handle_link_click(list_item.link)}
+                                    >
+                                        <ListItemIcon>
+                                            {list_item.icon}
+                                        </ListItemIcon>
+                                        <ListItemText primary={list_item.title} />
+                                    </ListItemButton>
+                                </ListItem>
+                            ))}
+                        </List>
+                        </Box>
+                </Drawer>
+            :
+                <DesktopDrawer variant="permanent" open={open}>
+                    <DrawerHeader>
+                        <IconButton onClick={handle_drawer_close}>
+                            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                        </IconButton>
+                    </DrawerHeader>
+                    <Divider />
+                    <List>
+                        {news_list.map(list_item => (
+                            <ListItem key={list_item.title} disablePadding sx={{ display: 'block' }}>
+                                <ListItemButton
+                                    sx={{
+                                    minHeight: 48,
+                                    justifyContent: open ? 'initial' : 'center',
+                                    px: 2.5,
+                                    }}
+                                    onClick={() => handle_link_click(list_item.link)}
+                                >
+                                    <ListItemIcon
+                                        sx={{
+                                            minWidth: 0,
+                                            mr: open ? 3 : 'auto',
+                                            justifyContent: 'center',
+                                        }}
+                                    >
+                                        {list_item.icon}
+                                    </ListItemIcon>
+                                    <ListItemText primary={list_item.title} sx={{ opacity: open ? 1 : 0 }} />
+                                </ListItemButton>
+                            </ListItem>
+                        ))}
+                    </List>
+                    <Divider />
+                    <List>
+                        {other_list.map(list_item => (
+                            <ListItem key={list_item.title} disablePadding sx={{ display: 'block' }}>
+                                <ListItemButton
+                                    sx={{
+                                    minHeight: 48,
+                                    justifyContent: open ? 'initial' : 'center',
+                                    px: 2.5,
+                                    }}
+                                    onClick={() => handle_link_click(list_item.link)}
+                                >
+                                    <ListItemIcon
+                                        sx={{
+                                            minWidth: 0,
+                                            mr: open ? 3 : 'auto',
+                                            justifyContent: 'center',
+                                        }}
+                                    >
+                                        {list_item.icon}
+                                    </ListItemIcon>
+                                    <ListItemText primary={list_item.title} sx={{ opacity: open ? 1 : 0 }} />
+                                </ListItemButton>
+                            </ListItem>
+                        ))}
+                    </List>
+                </DesktopDrawer>
+            }
         </>
     )
 }
 
-export default Header2;
+export default Header4;

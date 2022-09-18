@@ -38,7 +38,7 @@ export interface iSources_response {
     sources: iSource[],
 }
 
-interface iSource {
+export interface iSource {
     id: string,
     name: string,
     description: string,
