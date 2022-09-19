@@ -35,7 +35,7 @@ const Article: React.FC <props> = ({article, set_is_height_reached}) => {
             ref &&
             set_is_height_reached
         ) {
-            // old orc teсhnologies
+            // old orc teсhnologies (works very bad (not works on mobile))
             let offset_top = 0;
             let elem: HTMLElement | null = ref;
             do {
@@ -59,7 +59,12 @@ const Article: React.FC <props> = ({article, set_is_height_reached}) => {
             <div
                 className="article_image"
             >
-                <img src={article.urlToImage} height='200px'/>
+                <img
+                    src={article.urlToImage}
+                    width='100%'
+                    // height='200px'
+                    alt=""
+                />
             </div>
             <div className="article_time">
                 {article.publishedAt.split('T')[0] + ' ' + article.publishedAt.split('T')[1].split('Z')[0]}

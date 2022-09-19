@@ -10,7 +10,7 @@ export enum app_action_types {
     SET_MODAL_ARTICLE = 'APP/SET_MODAL_ARTICLE',
     SET_FONT_SIZE = 'APP/SET_FONT_SIZE',
     SET_NEWS_COUNT = 'APP/SET_NEWS_COUNT',
-
+    SET_USE_USER_LOCATION = 'APP/SET_USE_USER_LOCATION',
     SET_SEARCH_STRING = 'APP/SET_SEARCH_STRING',
 }
 
@@ -24,6 +24,7 @@ export type app_action =
     set_modal_article |
     set_font_size |
     set_news_count |
+    set_use_user_location |
     set_serach_string
 ;
 
@@ -69,6 +70,11 @@ interface set_font_size {
 interface set_news_count {
     type: app_action_types.SET_NEWS_COUNT,
     payload: number
+}
+
+interface set_use_user_location {
+    type: app_action_types.SET_USE_USER_LOCATION,
+    payload: boolean
 }
 
 interface set_serach_string {

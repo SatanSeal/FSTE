@@ -106,6 +106,15 @@ export function set_news_count(count: number) {
     }
 }
 
+export function set_use_user_location(payload: boolean) {
+    return (dispatch: Dispatch) => {
+        dispatch({
+            type: app_action_types.SET_USE_USER_LOCATION,
+            payload
+        })
+    }
+}
+
 export function set_serach_string(string: string) {
     return (dispatch: Dispatch) => {
         dispatch({

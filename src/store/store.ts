@@ -26,7 +26,6 @@ export const useStoreDispatch = () => {		// combine all actions and wrapps it in
 	const dispatch = useDispatch();
 	let all_action_creators = { 
 		...app_action_creators,
-		// ...IM_action_creators,
 	};
 	return bindActionCreators(all_action_creators, dispatch);
 }

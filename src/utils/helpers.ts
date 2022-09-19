@@ -1,11 +1,7 @@
+import { errors } from "../errors";
 import { iNews_response, iSources_response } from "../interfaces";
 import { category_enum, countries_enum, languages_enum, news_api, searchIn_enum, sorting_enum } from "../settings";
 
-// type iSearch_in = 'title' | 'description' | 'content';
-// type iCategory = 'business' | 'entertainment' | 'general' | 'health' | 'science' | 'sports' | 'technology';
-// type iCountry = 'ar' |'au' |'at' | 'be' | 'br' | 'bg' | 'ca' | 'cn' | 'co' | 'cu' | 'cz' | 'eg' | 'fr' | 'de' | 'gr' | 'hk' | 'hu' | 'in' | 'id' | 'ie' | 'il' | 'it' | 'jp' | 'lv' | 'lt' | 'my' | 'mx' | 'ma' | 'nl' | 'nz' | 'ng' | 'no' | 'ph' | 'pl' | 'pt' | 'ro' | 'ru' | 'sa' | 'rs' | 'sg' | 'sk' | 'si' | 'za' | 'kr' | 'se' | 'ch' | 'tw' | 'th' | 'tr' | 'ae' | 'ua' | 'gb' | 'us' | 've';
-// type iLanguage = 'ar' | 'de' | 'en' | 'es' | 'fr' | 'he' | 'it' | 'nl' | 'no' | 'pt' | 'ru' | 'sv' | 'ud' | 'zh';
-// type iSorting = 'relevancy' | 'popularity' | 'publishedAt';
 
 export interface everything_props {    // any of following are required: q, qInTitle, sources, domains
     path: '/everything',
@@ -59,21 +55,13 @@ export const GET: GET_overload = async (props) =>{
     let news_api_key = process.env.REACT_APP_NEWS_API_KEY;   // or move this to settings - ?
 
     if (!news_api_key){
-        
-        throw new Error();    // add (+show to client)
+        throw new Error(errors.MISSING_API_KEY);
     }
-    // console.log('news_api_key: ', news_api_key);
-
-    console.log('props: ', props);
 
     switch (props.path){
         case '/everything':
             // removes 'undefined' from objects (can be disabled if undefineds not passed)
             // Object.keys(props).forEach((k) => props[k as keyof typeof props] == null && delete props[k as keyof typeof props]); // fix this
-            if (props.q){
-                // props.q = encodeURI(props.q).slice(0, 499);
-            }
-
             if (props.language === 'auto'){
                 let lang = navigator.language.substring(0,2);
                 props.language = lang in languages_enum? lang as languages_enum : languages_enum['en'];
@@ -104,11 +92,6 @@ export const GET: GET_overload = async (props) =>{
 
         case '/top-headlines/sources':
             // Object.keys(props).forEach((k) => props[k as keyof typeof props] == null && delete props[k as keyof typeof props]); // fix this
-            
-            // if (!props.settings.category){
-            //     props.settings.category = 'general';
-            // }
-            
             if (props.language === 'auto'){
                 let lang = navigator.language.substring(0,2);
                 props.language = lang in languages_enum? lang as languages_enum : languages_enum['en'];
@@ -129,8 +112,6 @@ export const GET: GET_overload = async (props) =>{
         //     break;
     }
 
-    console.log('props: ', props);
-
     let props_string = '';
     let props_keys = Object.keys(props);
 
@@ -141,8 +122,6 @@ export const GET: GET_overload = async (props) =>{
             ? '?'
             : '&'
         ;
-        // props_string += key + '=' + props[key as keyof (everything_props | top_props | top_sources_props)]; // add join for arrays
-        // let val = props[key as keyof (everything_props | top_props | top_sources_props)];
         let value = props[key as keyof typeof props];
 
         props_string += key + '=' + (Array.isArray(value)
@@ -151,11 +130,6 @@ export const GET: GET_overload = async (props) =>{
         );
     })
 
-    console.log('props_string: ', props_string);
-
-    // let a: any;
-    // return a;
-    
     let res = await fetch(news_api + props.path + props_string, {
         headers: {
             'X-Api-Key': news_api_key,
@@ -164,11 +138,12 @@ export const GET: GET_overload = async (props) =>{
     
     if (res.status === 401){    // Unauthorized
         //show something to user
+        throw new Error(errors.UNAUTHORIZED_USER);
     }
 
     if (!res.ok){
         //show something
-        throw new Error();  // add
+        throw new Error(errors.FETCH_FAILED);
     }
 
     return await res.json();

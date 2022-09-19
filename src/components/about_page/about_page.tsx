@@ -4,6 +4,7 @@ import './about_page.scss';
 
 
 const AboutPage: React.FC = () => {
+    
     return (
         <div>
             <div>
@@ -20,6 +21,7 @@ const AboutPage: React.FC = () => {
                 // allowFullScreen=''
                 loading="lazy"
                 referrerPolicy='no-referrer-when-downgrade'
+                title='Map'
             />
         </div>
     )

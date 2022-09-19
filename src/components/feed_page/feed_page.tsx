@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { store, useStoreDispatch, use_store_selector } from "../../store/store";
 import { GET } from "../../utils/helpers";
@@ -8,50 +8,52 @@ import ArticlePreloader from "../UI/article_preloader/article_preloader";
 
 import './feed_page.scss';
 
+const num_of_preloaders = 3;
+
 const FeedPage: React.FC = () => {
 
-    const { news_fetch_count, news } = use_store_selector( store => store.app );
+    const { news_fetch_count, news, use_user_loaction } = use_store_selector( store => store.app );
     const { set_news, add_news } = useStoreDispatch();
 
     const [page, set_page] = useState(1);
     const [is_news_fetching, set_is_news_fetching] = useState(true);
-    const [num_of_preloaders, set_num_of_preloaders] = useState(3);
     const [is_height_reached, set_is_height_reached] = useState(false);
-    // const [end_reached, set_is_end_reached] = useState(false);
-    const [end_reached, set_is_end_reached] = useState(true);
+    const [end_reached, set_is_end_reached] = useState(false);
 
     useEffect(()=>{
-        get_data();
+        get_news();
         // eslint-disable-next-line
     }, []);
     
+    const inner_news_fetching = useRef(false);
     useEffect(()=>{
-        console.log('is_height_reached changed: ', is_height_reached);
-        if (is_height_reached && !end_reached){
+        if (is_height_reached && !end_reached && !inner_news_fetching.current){
+            
             let news_length = store.getState().app.news.length; // fix this
             if(news_length + news_fetch_count <= 100 ) { // newsAPI dev plan limit
                 (async function() {
-                    console.log('called data update')
-                    await get_data(true);
+                    inner_news_fetching.current = true;
+                    await get_news(true);
                     set_is_height_reached(false);
+                    inner_news_fetching.current = false;
                 }())
-            } else {
-                
             }
         }
         // eslint-disable-next-line
     }, [is_height_reached, end_reached]);
 
-    const get_data = async (update_news?: boolean) =>{
+    const get_news = async (update_news?: boolean) =>{
         set_is_news_fetching(true);
         try {
-            /*let response = await GET({path: '/top-headlines', pageSize: news_fetch_count, page: page, autodetect_country: true});
-            // let response = await GET({path: '/top-headlines', pageSize: news_fetch_count, page: page, autodetect_country: true});
-            // let response = await GET({path: '/top-headlines', pageSize: news_fetch_count, page: page,});
-            // let response = await GET({path: '/everything', q: 'apple', pageSize: news_fetch_count, page: page, autodetect_lang: true});
+            let response = await GET({
+                path: '/top-headlines',
+                pageSize: news_fetch_count,
+                page: page,
+                ...(use_user_loaction && {country: 'auto'})
+            });
             if (response.status !== 'ok'){
-                // do something
-                set_is_news_fetching(true);
+                // show snackbar
+                set_is_news_fetching(false);
                 return;
             }
             update_news
@@ -59,22 +61,13 @@ const FeedPage: React.FC = () => {
                 : set_news( response.articles )
             ;
             set_page(page + 1);
-            if (response.articles.length < news_fetch_count) set_is_end_reached(true);*/
+            if (response.articles.length < news_fetch_count) set_is_end_reached(true);
         } catch {
-
+            // show snackbar
         }
-        // let news = await GET({path: '/top-headlines/sources'});
-        // let news = await GET({path: '/top-headlines/sources', language: 'ru'});
-        // let news = await GET({path: '/top-headlines', country: 'za', category: 'technology', pageSize: 3, page: 1});
-        // let news = await GET({path: '/everything', q: 'apple', searchIn: 'content', sortBy: 'relevancy'});
-        // let news = await GET({path: '/everything', domains: ['techcrunch.com','tc.com'], language: ['ru', 'pt'], sortBy: 'relevancy'});
-        // console.log('news: ', news);
-        
-        // let news = await GET('/top-headlines', {pageSize: 3, page: page});
-        // let news = await GET({path: '/top-headlines', {pageSize: 3, page: page}});
-
         set_is_news_fetching(false);
     }
+
 
     return (
         <div
@@ -86,6 +79,7 @@ const FeedPage: React.FC = () => {
                 {news.map( (article, index) => {
                     return (
                         <Article
+                            key={article.url}
                             article={article}
                             set_is_height_reached={(!is_height_reached && index === news.length - 1)
                                 ? set_is_height_reached
@@ -95,8 +89,8 @@ const FeedPage: React.FC = () => {
                     )
                 })}
                 {is_news_fetching &&
-                    [...Array(num_of_preloaders)].map(()=>{
-                        return <ArticlePreloader/>;
+                    [...Array(num_of_preloaders)].map((i, index)=>{
+                        return <ArticlePreloader key={index}/>;
                     })
                 }
             </div>

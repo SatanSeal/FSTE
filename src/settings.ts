@@ -3,12 +3,9 @@ export const basename = '/fs_news/';
 export const news_api = 'https://newsapi.org/v2';
 export const show_redux: boolean = true;
 export const mobile_max_width: number = 900;
-export const version: string = 'v0.2';
+export const version: string = 'v0.3';
 
 // can(should) be moved to backend/.env
-// export const countries = ['ar','au','at','be','br','bg','ca','cn','co','cu','cz','eg','fr','de','gr','hk','hu','in','id','ie','il','it','jp','lv','lt','my','mx','ma','nl','nz','ng','no','ph','pl','pt','ro','ru','sa','rs','sg','sk','si','za','kr','se','ch','tw','th','tr','ae','ua','gb','us','ve'] as const;  // const for types (else string[])
-// export const languages = ['ar','de','en','es','fr','he','it','nl','no','pt','ru','sv','ud','zh'] as const;
-// export const languages_enum = ['ar','de','en','es','fr','he','it','nl','no','pt','ru','sv','ud','zh'] as const;
 export enum countries_enum {
     ar='ar',
     au='au',

@@ -9,7 +9,7 @@ export interface iApp_state {
     opened_article: iArticle | null,
     font_size: number,
     news_fetch_count: number,
-
+    use_user_loaction: boolean,
     search_string: string | null,
 }
 

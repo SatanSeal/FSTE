@@ -3,6 +3,9 @@
     border-radius: 5px;
     padding: 5px;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
     .article_image{
         img{

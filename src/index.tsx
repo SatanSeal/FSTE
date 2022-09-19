@@ -11,12 +11,13 @@ import { basename } from "./settings";
 
 import './scss/index.scss';
 
-// import ArticleModal from "./components/article_modal/article_modal";
-import { DrawerHeader } from "./components/UI/header_2/header_2";
 import Box from "@mui/material/Box";
+import LinearProgress from '@mui/material/LinearProgress';
 import ColorModeHandler from "./components/UI/color_mode_handler/color_mode_handler";
-import Header4 from "./components/UI/header_4/header_4";
-import ArticleModal2 from "./components/article_modal/article_modal2";
+import Header, { DrawerHeader } from "./components/UI/header/header";
+import ArticleModal from "./components/article_modal/article_modal";
+import LocalStroageManager from "./components/UI/local_storage_manager/local_store_manager";
+import FontSizeWrapper from "./components/UI/fontSize_wrapper/fontSize_wrapper";
 
 //	dynamic import of pages
 const FeedPage = lazy(() => import('./components/feed_page/feed_page'));
@@ -46,23 +47,13 @@ const Index: React.FC = () => {
 				<BrowserRouter basename={basename}>
 					<LocalizationProvider dateAdapter={AdapterDateFns}>
 						<ThemeProvider theme={theme}>
-							<ColorModeHandler set_outer_dark_mode={set_dark_mode}/>	{/* workaround, fix it */}
-							<Box sx={{
-								display: 'flex',
-								// width: '100%',
-								// alignItems: 'center',
-								// justifyContent: 'center',
-								// bgcolor: 'background.default',
-								// color: 'text.primary',
-								// borderRadius: 1,
-								// p: 3,
-							}}>
-								{/* <Header2/> */}
-								{/* <Header3/> */}
-								<Header4/>
+							<ColorModeHandler set_outer_dark_mode={set_dark_mode}/>	{/* set_outer_dark_mode - workaround, fix it */}
+							<LocalStroageManager/>
+							<FontSizeWrapper>
+								<Header/>
 								<Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-									<Suspense fallback={<></>}> {/* add loader */}
-										<DrawerHeader />	{/* top padding */}
+									<DrawerHeader />	{/* top padding */}
+									<Suspense fallback={<LinearProgress />}>
 										<Switch>
 											<Route exact path='/feed' component={FeedPage}/>
 											<Route exact path='/search' component={SearchPage}/>
@@ -73,8 +64,8 @@ const Index: React.FC = () => {
 										</Switch>
 									</Suspense>
 								</Box>
-							</Box>
-							<ArticleModal2/>
+							</FontSizeWrapper>
+							<ArticleModal/>
 						</ThemeProvider>
 					</LocalizationProvider>
 				</BrowserRouter>

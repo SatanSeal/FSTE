@@ -1,5 +1,7 @@
-add favicon and some description (look in eopt)
-add loader in index suspense
-change Readme.md
-change changelog
-change all enums to strings -?
+add OG to index.html
+add normal fontSize manager (using mui theme - ?)
+fix ugly article_modal (scrollable content, sizing on open and close)
+add snackbars (show some errors to user)
+add custom errors
+fix autofetch on mobiles (article component)
+add tests
